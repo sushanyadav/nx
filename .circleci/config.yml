@@ -89,7 +89,7 @@ jobs:
     steps:
       - run: lscpu
       - checkout
-      - run: npx nx-cloud@next start-ci-run --distributes-on="8 linux-medium" --stop-agents-after="e2e"
+      - run: npx nx-cloud@next start-ci-run --distributes-on="16 linux-medium" --stop-agents-after="e2e"
       - run:
           command: |
             sudo apt-get update
