@@ -34,8 +34,7 @@ import {
 } from 'react-router-dom';
 import { getProjectGraphDataService } from '../hooks/get-project-graph-data-service';
 import { useCurrentPath } from '../hooks/use-current-path';
-import { useRouteConstructor } from '../util';
-import { useEnvironmentConfig } from '@nx/graph/shared';
+import { useEnvironmentConfig, useRouteConstructor } from '@nx/graph/shared';
 
 export function ProjectsSidebar(): JSX.Element {
   const environmentConfig = useEnvironmentConfig();

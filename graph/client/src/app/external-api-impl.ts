@@ -27,19 +27,32 @@ export class ExternalApiImpl extends ExternalApi {
           const url = `${payload.sourceRoot}/${payload.file}`;
           this.graphInteractionEventListener({
             type: 'file-click',
-            payload: url,
+            payload: { url },
           });
         }
         if (type === 'open-project-config') {
           this.graphInteractionEventListener({
             type: 'open-project-config',
-            payload: payload.projectName,
+            payload: { projectName: payload.projectName },
           });
         }
         if (type === 'run-task') {
           this.graphInteractionEventListener({
             type: 'run-task',
-            payload: payload.taskId,
+            payload: { taskId: payload.taskId },
+          });
+        } else if (type === 'open-project-graph') {
+          this.graphInteractionEventListener({
+            type: 'open-project-graph',
+            payload: { projectName: payload.projectName },
+          });
+        } else if (type === 'open-task-graph') {
+          this.graphInteractionEventListener({
+            type: 'open-task-graph',
+            payload: {
+              projectName: payload.projectName,
+              targetName: payload.targetName,
+            },
           });
         } else {
           console.log('unhandled event', type, payload);
