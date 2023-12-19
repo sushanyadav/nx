@@ -5,9 +5,10 @@ import type {
   ProjectGraphClientResponse,
   TaskGraphClientResponse,
 } from 'nx/src/command-line/graph/graph';
-import { AppConfig, ExternalApi } from '@nx/graph/shared';
+import { AppConfig } from './lib/app-config';
+import { ExternalApi } from './lib/external-api';
 
-export declare global {
+declare global {
   interface Window {
     exclude: string[];
     watch: boolean;
@@ -20,29 +21,5 @@ export declare global {
     appConfig: AppConfig;
     useXstateInspect: boolean;
     externalApi?: ExternalApi;
-  }
-}
-declare module 'cytoscape' {
-  interface Core {
-    anywherePanning: Function;
-  }
-
-  interface ElementDefinition {
-    pannable?: boolean;
-  }
-
-  interface NodeSingular {
-    popperRef: Function;
-    pannable: () => boolean;
-  }
-
-  interface EdgeSingular {
-    popperRef: Function;
-  }
-
-  namespace Css {
-    interface EdgeLine {
-      'edge-text-rotation'?: string;
-    }
   }
 }

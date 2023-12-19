@@ -1,8 +1,8 @@
 /* eslint-disable @nx/enforce-module-boundaries */
 // nx-ignore-next-line
 import { ProjectGraphDependency, ProjectGraphProjectNode } from '@nx/devkit';
+import { getEnvironmentConfig } from '@nx/graph/shared';
 /* eslint-enable @nx/enforce-module-boundaries */
-import { getEnvironmentConfig } from './hooks/use-environment-config';
 import { To, useParams, useSearchParams } from 'react-router-dom';
 
 export const useRouteConstructor = (): ((

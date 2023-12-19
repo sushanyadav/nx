@@ -19,7 +19,6 @@ import { SearchDepth } from './panels/search-depth';
 import { ShowHideAll } from '../ui-components/show-hide-all';
 import { TextFilterPanel } from './panels/text-filter-panel';
 import { TracingPanel } from './panels/tracing-panel';
-import { useEnvironmentConfig } from '../hooks/use-environment-config';
 import { TracingAlgorithmType } from './machines/interfaces';
 import { getProjectGraphService } from '../machines/get-services';
 import { useIntervalWhen } from '../hooks/use-interval-when';
@@ -36,6 +35,7 @@ import {
 import { getProjectGraphDataService } from '../hooks/get-project-graph-data-service';
 import { useCurrentPath } from '../hooks/use-current-path';
 import { useRouteConstructor } from '../util';
+import { useEnvironmentConfig } from '@nx/graph/shared';
 
 export function ProjectsSidebar(): JSX.Element {
   const environmentConfig = useEnvironmentConfig();
