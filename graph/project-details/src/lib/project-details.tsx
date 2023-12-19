@@ -35,6 +35,7 @@ export function ProjectDetails() {
           <h2 className="text-xl">Targets</h2>
           {Object.entries(targets ?? {}).map(([targetName, target]) =>
             Target({
+              projectName: name,
               targetName: targetName,
               targetConfiguration: target,
               sourceMap,

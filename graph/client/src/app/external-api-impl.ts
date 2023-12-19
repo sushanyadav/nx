@@ -1,8 +1,6 @@
 import { ExternalApi, getExternalApiService } from '@nx/graph/shared';
 import { getRouter } from './get-router';
 import { getProjectGraphService } from './machines/get-services';
-import { getGraphService } from './machines/graph.service';
-import { t } from 'xstate';
 
 export class ExternalApiImpl extends ExternalApi {
   _projectGraphService = getProjectGraphService();
@@ -21,20 +19,24 @@ export class ExternalApiImpl extends ExternalApi {
     super();
     this.externalApiService.subscribe(
       ({ type, payload }: { type: string; payload: any }) => {
-        if (type === 'FileLinkClick') {
+        if (!this.graphInteractionEventListener) {
+          console.log('graphInteractionEventListener not registered.');
+          return;
+        }
+        if (type === 'file-click') {
           const url = `${payload.sourceRoot}/${payload.file}`;
           this.graphInteractionEventListener({
             type: 'file-click',
             payload: url,
           });
         }
-        if (type === 'ProjectOpenConfigClick') {
+        if (type === 'open-project-config') {
           this.graphInteractionEventListener({
             type: 'open-project-config',
             payload: payload.projectName,
           });
         }
-        if (type === 'RunTaskClick') {
+        if (type === 'run-task') {
           this.graphInteractionEventListener({
             type: 'run-task',
             payload: payload.taskId,

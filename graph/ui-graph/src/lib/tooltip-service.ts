@@ -27,7 +27,7 @@ export class GraphTooltipService {
             graph.renderMode === 'nx-console'
               ? () =>
                   this.externalApiService.postEvent({
-                    type: 'ProjectOpenConfigClick',
+                    type: 'open-project-config',
                     payload: {
                       projectName: event.data.id,
                     },
@@ -46,7 +46,7 @@ export class GraphTooltipService {
             graph.renderMode === 'nx-console'
               ? () =>
                   this.externalApiService.postEvent({
-                    type: 'RunTaskClick',
+                    type: 'run-task',
                     payload: {
                       taskId: event.data.id,
                     },
@@ -76,7 +76,7 @@ export class GraphTooltipService {
             graph.renderMode === 'nx-console'
               ? (url) =>
                   this.externalApiService.postEvent({
-                    type: 'FileLinkClick',
+                    type: 'file-click',
                     payload: {
                       sourceRoot: event.data.sourceRoot,
                       file: url,

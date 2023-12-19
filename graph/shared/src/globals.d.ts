@@ -8,7 +8,7 @@ import type {
 import { AppConfig } from './lib/app-config';
 import { ExternalApi } from './lib/external-api';
 
-declare global {
+export declare global {
   interface Window {
     exclude: string[];
     watch: boolean;
