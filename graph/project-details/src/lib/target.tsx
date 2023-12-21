@@ -8,7 +8,11 @@ import {
   useEnvironmentConfig,
   useRouteConstructor,
 } from '@nx/graph/shared';
-import { EyeIcon, PlayIcon } from '@heroicons/react/24/outline';
+import {
+  EyeIcon,
+  PencilSquareIcon,
+  PlayIcon,
+} from '@heroicons/react/24/outline';
 import { To, useNavigate, useSearchParams } from 'react-router-dom';
 
 /* eslint-disable-next-line */
@@ -24,7 +28,6 @@ export function Target(props: TargetProps) {
   const externalApiService = getExternalApiService();
   const navigate = useNavigate();
   const routeContructor = useRouteConstructor();
-  // const [searchParams, setSearchParams] = useSearchParams();
 
   const runTarget = () => {
     externalApiService.postEvent({
@@ -55,6 +58,26 @@ export function Target(props: TargetProps) {
     }
   };
 
+  const overrideTarget = () => {
+    externalApiService.postEvent({
+      type: 'override-target',
+      payload: {
+        projectName: props.projectName,
+        targetName: props.targetName,
+        targetConfigString: JSON.stringify(props.targetConfiguration),
+      },
+    });
+  };
+
+  const shouldDisplayOverrideTarget = () => {
+    return (
+      environment === 'nx-console' &&
+      Object.entries(props.sourceMap ?? {})
+        .filter(([key]) => key.startsWith(`targets.${props.targetName}`))
+        .every(([, value]) => value[1] !== 'nx-core-build-project-json-nodes')
+    );
+  };
+
   return (
     <div className="ml-3 mb-3">
       <h3 className="text-lg font-bold flex">
@@ -63,6 +86,9 @@ export function Target(props: TargetProps) {
           <PlayIcon className="h-5 w-5" onClick={runTarget} />
         )}
         <EyeIcon className="h-5 w-5" onClick={viewInTaskGraph}></EyeIcon>
+        {shouldDisplayOverrideTarget() && (
+          <PencilSquareIcon className="h-5 w-5" onClick={overrideTarget} />
+        )}
       </h3>
       <div className="ml-3">
         {Object.entries(props.targetConfiguration).map(([key, value]) =>

@@ -29,30 +29,30 @@ export class ExternalApiImpl extends ExternalApi {
             type: 'file-click',
             payload: { url },
           });
-        }
-        if (type === 'open-project-config') {
+        } else if (type === 'open-project-config') {
           this.graphInteractionEventListener({
             type: 'open-project-config',
-            payload: { projectName: payload.projectName },
+            payload,
           });
-        }
-        if (type === 'run-task') {
+        } else if (type === 'run-task') {
           this.graphInteractionEventListener({
             type: 'run-task',
-            payload: { taskId: payload.taskId },
+            payload,
           });
         } else if (type === 'open-project-graph') {
           this.graphInteractionEventListener({
             type: 'open-project-graph',
-            payload: { projectName: payload.projectName },
+            payload,
           });
         } else if (type === 'open-task-graph') {
           this.graphInteractionEventListener({
             type: 'open-task-graph',
-            payload: {
-              projectName: payload.projectName,
-              targetName: payload.targetName,
-            },
+            payload,
+          });
+        } else if (type === 'override-target') {
+          this.graphInteractionEventListener({
+            type: 'override-target',
+            payload,
           });
         } else {
           console.log('unhandled event', type, payload);
