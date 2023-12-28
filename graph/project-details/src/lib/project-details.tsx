@@ -19,13 +19,14 @@ export function ProjectDetails() {
   const {
     project: {
       name,
-      data: { targets, root, ...projectData },
+      data: {  root, ...projectData },
     },
     sourceMap,
   } = useRouteLoaderData('selectedProjectDetails') as {
     project: ProjectGraphProjectNode;
     sourceMap: Record<string, string[]>;
   };
+  console.log(sourceMap)
 
   const { environment } = useEnvironmentConfig();
   const externalApiService = getExternalApiService();
@@ -58,7 +59,7 @@ export function ProjectDetails() {
         ))}
       </h2>
       <div>
-        <div className="mb-2">
+        {/* <div className="mb-2">
           <h2 className="text-xl">Targets</h2>
           {Object.entries(targets ?? {}).map(([targetName, target]) =>
             Target({
@@ -68,10 +69,10 @@ export function ProjectDetails() {
               sourceMap,
             })
           )}
-        </div>
+        </div> */}
         {Object.entries(projectData).map(([key, value]) => {
           if (
-            key === 'targets' ||
+            // key === 'targets' ||
             key === 'root' ||
             key === 'name' ||
             key === '$schema' ||

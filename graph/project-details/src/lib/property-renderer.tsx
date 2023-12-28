@@ -20,20 +20,27 @@ export function PropertyRenderer(props: PropertyRendererProps) {
   };
 
   return (
-    <div title={getSourceInformation(sourceMap, sourceMapKey)}>
+    <div title={getSourceInformation(sourceMap, sourceMapKey)} className={!isCollapsible ? 'pl-4 relative': 'relative'}>
+      <span className={!isPrimitive(props.propertyValue) ? 'border-2 border-solid border-red-600' : ''}>
       {isCollapsible && (
-        <button className="text-xs" onClick={toggleCollapse}>
+        <button className="text-xs w-4" onClick={toggleCollapse}>
           {isCollapsed ? '\u25B6' : '\u25BC'}
         </button>
       )}
-      <span className="font-medium">{propertyKey}</span>:{' '}
+      <span className="font-medium">{propertyKey}
+      <div className="absolute top-0 left-0 w-full bg-grey-500 z-10"></div>
+      </span>:{' '}
       {renderOpening(propertyValue)}
+      
+      </span>
+      
       {!isCollapsed || !isCollapsible ? (
         <PropertyValueRenderer {...props} />
       ) : (
         '...'
       )}
       {renderClosing(propertyValue)}
+     
     </div>
   );
 }
@@ -91,10 +98,19 @@ function PropertyValueRenderer(props: PropertValueRendererProps) {
   } else {
     return (
       <>
-        <code>{`${propertyValue}`}</code>,
+        <code className='border-2 border-solid border-blue-600'>{`${propertyValue}`}</code>,
       </>
     );
   }
+}
+
+type PropertyKeyRendererProps = PropertyRendererProps
+function PropertyKeyRenderer(props: PropertyKeyRendererProps) {
+
+}
+
+function isPrimitive(value: any): boolean {
+  return (!Array.isArray(value) && typeof value !== 'object')
 }
 
 function renderOpening(value: any): string {
@@ -112,5 +128,6 @@ function renderClosing(value: any): string {
     ? '},'
     : '';
 }
+
 
 export default PropertyRenderer;
