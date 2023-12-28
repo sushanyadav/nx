@@ -14,6 +14,7 @@ import {
   useRouteConstructor,
 } from '@nx/graph/shared';
 import { EyeIcon } from '@heroicons/react/24/outline';
+import { JsonLineRenderer } from './json-line-renderer';
 
 export function ProjectDetails() {
   const {
@@ -45,51 +46,52 @@ export function ProjectDetails() {
       navigate(routeContructor(`/projects/${encodeURIComponent(name)}`, true));
     }
   };
+  return JsonLineRenderer({jsonData: projectData})
 
-  return (
-    <div className="m-4 overflow-auto w-full">
-      <h1 className="text-2xl flex">
-        {name}{' '}
-        <EyeIcon className="h-5 w-5" onClick={viewInProjectGraph}></EyeIcon>
-      </h1>
-      <h2 className="text-lg pl-6 mb-3 flex flex-row gap-2">
-        {root}{' '}
-        {projectData.tags?.map((tag) => (
-          <p className="bg-slate-300">{tag}</p>
-        ))}
-      </h2>
-      <div>
-        {/* <div className="mb-2">
-          <h2 className="text-xl">Targets</h2>
-          {Object.entries(targets ?? {}).map(([targetName, target]) =>
-            Target({
-              projectName: name,
-              targetName: targetName,
-              targetConfiguration: target,
-              sourceMap,
-            })
-          )}
-        </div> */}
-        {Object.entries(projectData).map(([key, value]) => {
-          if (
-            // key === 'targets' ||
-            key === 'root' ||
-            key === 'name' ||
-            key === '$schema' ||
-            key === 'tags' ||
-            key === 'files'
-          )
-            return undefined;
+  // return (
+  //   <div className="m-4 overflow-auto w-full">
+  //     <h1 className="text-2xl flex">
+  //       {name}{' '}
+  //       <EyeIcon className="h-5 w-5" onClick={viewInProjectGraph}></EyeIcon>
+  //     </h1>
+  //     <h2 className="text-lg pl-6 mb-3 flex flex-row gap-2">
+  //       {root}{' '}
+  //       {projectData.tags?.map((tag) => (
+  //         <p className="bg-slate-300">{tag}</p>
+  //       ))}
+  //     </h2>
+  //     <div>
+  //       {/* <div className="mb-2">
+  //         <h2 className="text-xl">Targets</h2>
+  //         {Object.entries(targets ?? {}).map(([targetName, target]) =>
+  //           Target({
+  //             projectName: name,
+  //             targetName: targetName,
+  //             targetConfiguration: target,
+  //             sourceMap,
+  //           })
+  //         )}
+  //       </div> */}
+  //       {Object.entries(projectData).map(([key, value]) => {
+  //         if (
+  //           // key === 'targets' ||
+  //           key === 'root' ||
+  //           key === 'name' ||
+  //           key === '$schema' ||
+  //           key === 'tags' ||
+  //           key === 'files'
+  //         )
+  //           return undefined;
 
-          return PropertyRenderer({
-            propertyKey: key,
-            propertyValue: value,
-            sourceMap,
-          });
-        })}
-      </div>
-    </div>
-  );
+  //         return PropertyRenderer({
+  //           propertyKey: key,
+  //           propertyValue: value,
+  //           sourceMap,
+  //         });
+  //       })}
+  //     </div>
+  //   </div>
+  // );
 }
 
 export default ProjectDetails;
