@@ -20,14 +20,13 @@ export function ProjectDetails() {
   const {
     project: {
       name,
-      data: {  root, ...projectData },
+      data: { root, ...projectData },
     },
     sourceMap,
   } = useRouteLoaderData('selectedProjectDetails') as {
     project: ProjectGraphProjectNode;
     sourceMap: Record<string, string[]>;
   };
-  console.log(sourceMap)
 
   const { environment } = useEnvironmentConfig();
   const externalApiService = getExternalApiService();
@@ -46,7 +45,7 @@ export function ProjectDetails() {
       navigate(routeContructor(`/projects/${encodeURIComponent(name)}`, true));
     }
   };
-  return JsonLineRenderer({jsonData: projectData})
+  return JsonLineRenderer({ jsonData: projectData, sourceMap });
 
   // return (
   //   <div className="m-4 overflow-auto w-full">

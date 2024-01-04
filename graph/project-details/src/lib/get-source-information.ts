@@ -4,7 +4,7 @@ export function getSourceInformation(
 ): string | undefined {
   const sourceInfo = sourceMap?.[key];
   if (sourceInfo) {
-    return `${key} was set by plugin \n \n ${sourceInfo[1]} \n \n while processing \n \n ${sourceInfo[0]}`;
+    return ` ${sourceInfo[1]}(${sourceInfo[0]})`;
   }
   if (!key.includes('.')) {
     return undefined;

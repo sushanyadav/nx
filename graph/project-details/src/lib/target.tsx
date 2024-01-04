@@ -1,19 +1,18 @@
 /* eslint-disable @nx/enforce-module-boundaries */
 // nx-ignore-next-line
-import { TargetConfiguration } from '@nx/devkit';
-import PropertyRenderer from './property-renderer';
-import { useState } from 'react';
-import {
-  getExternalApiService,
-  useEnvironmentConfig,
-  useRouteConstructor,
-} from '@nx/graph/shared';
 import {
   EyeIcon,
   PencilSquareIcon,
   PlayIcon,
 } from '@heroicons/react/24/outline';
-import { To, useNavigate, useSearchParams } from 'react-router-dom';
+import { TargetConfiguration } from '@nx/devkit';
+import {
+  getExternalApiService,
+  useEnvironmentConfig,
+  useRouteConstructor,
+} from '@nx/graph/shared';
+import { useNavigate } from 'react-router-dom';
+import PropertyRenderer from './property-renderer';
 
 /* eslint-disable-next-line */
 export interface TargetProps {
