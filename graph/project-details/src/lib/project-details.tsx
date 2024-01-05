@@ -5,6 +5,7 @@ import { useNavigate, useRouteLoaderData } from 'react-router-dom';
 /* eslint-disable @nx/enforce-module-boundaries */
 // nx-ignore-next-line
 import { ProjectGraphProjectNode } from '@nx/devkit';
+
 import {
   getExternalApiService,
   useEnvironmentConfig,
@@ -13,18 +14,18 @@ import {
 import { JsonLineRenderer } from './json-line-renderer';
 import { EyeIcon } from '@heroicons/react/24/outline';
 
-export function ProjectDetails() {
-  const {
-    project: {
-      name,
-      data: { root, ...projectData },
-    },
-    sourceMap,
-  } = useRouteLoaderData('selectedProjectDetails') as {
-    project: ProjectGraphProjectNode;
-    sourceMap: Record<string, string[]>;
-  };
+export interface ProjectDetailsProps {
+  project: ProjectGraphProjectNode;
+  sourceMap: Record<string, string[]>;
+}
 
+export function ProjectDetails({
+  project: {
+    name,
+    data: { root, ...projectData },
+  },
+  sourceMap,
+}: ProjectDetailsProps) {
   const { environment } = useEnvironmentConfig();
   const externalApiService = getExternalApiService();
   const navigate = useNavigate();
