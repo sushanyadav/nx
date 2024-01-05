@@ -1,8 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import styles from './app.module.css';
-import Target from './target';
 
-import PropertyRenderer from './property-renderer';
 import { useNavigate, useRouteLoaderData } from 'react-router-dom';
 
 /* eslint-disable @nx/enforce-module-boundaries */
@@ -13,8 +10,8 @@ import {
   useEnvironmentConfig,
   useRouteConstructor,
 } from '@nx/graph/shared';
-import { EyeIcon } from '@heroicons/react/24/outline';
 import { JsonLineRenderer } from './json-line-renderer';
+import { EyeIcon } from '@heroicons/react/24/outline';
 
 export function ProjectDetails() {
   const {
@@ -45,7 +42,35 @@ export function ProjectDetails() {
       navigate(routeContructor(`/projects/${encodeURIComponent(name)}`, true));
     }
   };
-  return JsonLineRenderer({ jsonData: projectData, sourceMap });
+
+  const projectDataSorted = sortObjectWithTargetsFirst(projectData);
+  return (
+    <div className="flex flex-col w-full">
+      <div className="flex">
+        <div className="w-16 pr-2 border-r-2 border-solid border-slate-700">
+          <EyeIcon
+            className="h-6 w-6 ml-5 mt-3"
+            onClick={viewInProjectGraph}
+          ></EyeIcon>
+        </div>
+        <div className="pl-6 pb-6">
+          <h1 className="text-4xl flex items-center">
+            <span>{name}</span>
+          </h1>
+          <div className="flex gap-2">
+            <span className="text-slate-500 text-xl"> {root}</span>
+
+            {projectData.tags?.map((tag) => (
+              <div className="dark:bg-sky-500 text-white rounded px-1">
+                {tag}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+      {JsonLineRenderer({ jsonData: projectDataSorted, sourceMap })}
+    </div>
+  );
 
   // return (
   //   <div className="m-4 overflow-auto w-full">
@@ -91,6 +116,24 @@ export function ProjectDetails() {
   //     </div>
   //   </div>
   // );
+}
+
+function sortObjectWithTargetsFirst(obj: any) {
+  let sortedObj: any = {};
+
+  // If 'targets' exists, set it as the first property
+  if (obj.hasOwnProperty('targets')) {
+    sortedObj.targets = obj.targets;
+  }
+
+  // Copy the rest of the properties
+  for (let key in obj) {
+    if (key !== 'targets') {
+      sortedObj[key] = obj[key];
+    }
+  }
+
+  return sortedObj;
 }
 
 export default ProjectDetails;

@@ -5,6 +5,8 @@ import {
   PencilSquareIcon,
   PlayIcon,
 } from '@heroicons/react/24/outline';
+
+// nx-ignore-next-line
 import { TargetConfiguration } from '@nx/devkit';
 import {
   getExternalApiService,

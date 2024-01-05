@@ -1,6 +1,19 @@
-import { PlayIcon } from '@heroicons/react/24/outline';
+import {
+  ChevronDownIcon,
+  ChevronRightIcon,
+  EyeIcon,
+  PlayIcon,
+} from '@heroicons/react/24/outline';
 import { getSourceInformation } from './get-source-information';
 import useMapState from './use-map-state';
+import {
+  getExternalApiService,
+  useEnvironmentConfig,
+  useRouteConstructor,
+} from '@nx/graph/shared';
+import { useNavigate } from 'react-router-dom';
+import { get } from 'http';
+import { useEffect } from 'react';
 
 interface JsonLineRendererProps {
   jsonData: any;
@@ -14,10 +27,14 @@ export function JsonLineRenderer(props: JsonLineRendererProps) {
   let lineToPropertyPathMap = new Map<number, string>();
   let lineToInteractionMap = new Map<
     number,
-    { target?: string; configuration?: string }
+    { target: string; configuration?: string }
   >();
 
   const [getCollapsed, setCollapsed] = useMapState<number, boolean>();
+  const { environment } = useEnvironmentConfig();
+  const externalApiService = getExternalApiService();
+  const navigate = useNavigate();
+  const routeContructor = useRouteConstructor();
 
   function add(value: string, depth: number) {
     if (lines.length === currentLine) {
@@ -64,6 +81,25 @@ export function JsonLineRenderer(props: JsonLineRendererProps) {
       currentLine++;
 
       Object.entries(jsonData).forEach(([key, value], index, array) => {
+        // skip empty objects
+        if (
+          Object.keys(value as any).length === 0 &&
+          typeof value === 'object'
+        ) {
+          return;
+        }
+
+        // skip certain root properties
+        if (
+          depth === 0 &&
+          (key === 'sourceRoot' ||
+            key === 'name' ||
+            key === '$schema' ||
+            key === 'tags')
+        ) {
+          return;
+        }
+
         add(`"${key}": `, depth);
 
         if (propertyPath === 'targets') {
@@ -106,7 +142,16 @@ export function JsonLineRenderer(props: JsonLineRendererProps) {
   }
 
   processJson(props.jsonData);
+
   console.log(lineToInteractionMap);
+  // start off with all targets & configurations collapsed~
+  useEffect(() => {
+    for (const line of lineToInteractionMap.keys()) {
+      if (!getCollapsed(line)) {
+        setCollapsed(line, true);
+      }
+    }
+  }, []);
 
   function toggleCollapsed(index: number) {
     setCollapsed(index, !getCollapsed(index));
@@ -127,59 +172,117 @@ export function JsonLineRenderer(props: JsonLineRendererProps) {
     target,
     configuration,
   }: {
-    target?: string;
+    target: string;
     configuration?: string;
   }) {
-    console.log(target, configuration);
+    const projectName = props.jsonData.name;
+
+    externalApiService.postEvent({
+      type: 'run-task',
+      payload: { taskId: `${projectName}:${target}` },
+    });
+  }
+
+  function viewInTaskGraph({
+    target,
+    configuration,
+  }: {
+    target: string;
+    configuration?: string;
+  }) {
+    const projectName = props.jsonData.name;
+    if (environment === 'nx-console') {
+      externalApiService.postEvent({
+        type: 'open-task-graph',
+        payload: {
+          projectName: projectName,
+          targetName: target,
+        },
+      });
+    } else {
+      navigate(
+        routeContructor(
+          {
+            pathname: `/tasks/${encodeURIComponent(target)}`,
+            search: `?projects=${encodeURIComponent(projectName)}`,
+          },
+          true
+        )
+      );
+    }
   }
 
   return (
-    <div className="overflow-auto w-full">
-      {lines.map(([text, indentation], index) => {
-        if (
-          lineIsCollapsed(index) ||
-          index === 0 ||
-          index === lines.length - 1
-        ) {
-          return null;
-        }
-        const isCollapsible = collapsibleSections.has(index);
-        const offset = Math.max(indentation - (isCollapsible ? 1 : 0), 0);
-        const propertyPathAtLine = lineToPropertyPathMap.get(index);
-        const sourceInformation = propertyPathAtLine
-          ? getSourceInformation(props.sourceMap, propertyPathAtLine)
-          : '';
-        return (
-          <div
-            style={{ paddingLeft: `${offset}rem` }}
-            className="group truncate hover:bg-slate-800"
-          >
-            {collapsibleSections.has(index) && (
-              <span
-                style={{ width: '1rem', display: 'inline' }}
-                onClick={() => toggleCollapsed(index)}
-              >
-                {getCollapsed(index) ? '>' : 'v'}
-              </span>
-            )}
-            {text}
-            {getCollapsed(index) ? '...' : ''}
-            {lineToInteractionMap.get(index)?.target && (
-              <PlayIcon
-                className="h-5 w-5 inline"
-                onClick={() => runTarget(lineToInteractionMap.get(index)!)}
-              />
-            )}
+    <div className="overflow-auto w-full flex">
+      <div className="h-fit min-h-screen w-16 shrink-0 pr-2 border-solid border-r-2 border-slate-700">
+        {lines.map(([text, indentation], index) => {
+          if (
+            lineIsCollapsed(index) ||
+            index === 0 ||
+            index === lines.length - 1
+          ) {
+            return null;
+          }
+          const canCollapse =
+            collapsibleSections.has(index) &&
+            collapsibleSections.get(index)! - index > 1;
+          const interaction = lineToInteractionMap.get(index);
+          return (
+            <div className="flex justify-end items-center h-6">
+              {interaction?.target && !interaction?.configuration && (
+                <EyeIcon
+                  className="h-4 w-4"
+                  onClick={() => viewInTaskGraph(interaction!)}
+                />
+              )}
+              {environment === 'nx-console' && interaction?.target && (
+                <PlayIcon
+                  className="h-4 w-4"
+                  onClick={() => runTarget(interaction!)}
+                />
+              )}
 
-            <span
-              className="ml-32 hidden group-hover:inline-block text-sm text-slate-500"
-              title="yelloooo"
+              {canCollapse && (
+                <div onClick={() => toggleCollapsed(index)} className="h-4 w-4">
+                  {getCollapsed(index) ? (
+                    <ChevronRightIcon />
+                  ) : (
+                    <ChevronDownIcon />
+                  )}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+      <div className="pl-2">
+        {lines.map(([text, indentation], index) => {
+          if (
+            lineIsCollapsed(index) ||
+            index === 0 ||
+            index === lines.length - 1
+          ) {
+            return null;
+          }
+          const propertyPathAtLine = lineToPropertyPathMap.get(index);
+          const sourceInformation = propertyPathAtLine
+            ? getSourceInformation(props.sourceMap, propertyPathAtLine)
+            : '';
+          return (
+            <pre
+              style={{ paddingLeft: `${indentation}rem` }}
+              className="group truncate hover:bg-slate-800 h-6"
             >
-              {sourceInformation}
-            </span>
-          </div>
-        );
-      })}
+              {text}
+              {getCollapsed(index) ? '...' : ''}
+
+              <span className="ml-32 hidden group-hover:inline-block text-sm text-slate-500">
+                {sourceInformation}
+              </span>
+            </pre>
+          );
+        })}
+      </div>
     </div>
   );
 }
