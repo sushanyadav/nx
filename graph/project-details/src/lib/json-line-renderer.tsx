@@ -4,16 +4,17 @@ import {
   EyeIcon,
   PlayIcon,
 } from '@heroicons/react/24/outline';
-import { getSourceInformation } from './get-source-information';
-import useMapState from './use-map-state';
 import {
   getExternalApiService,
   useEnvironmentConfig,
   useRouteConstructor,
 } from '@nx/graph/shared';
-import { useNavigate } from 'react-router-dom';
-import { get } from 'http';
 import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { getSourceInformation } from './get-source-information';
+import useMapState from './use-map-state';
+
+import hljs from 'highlight.js/lib/core';
 
 interface JsonLineRendererProps {
   jsonData: any;
@@ -269,20 +270,26 @@ export function JsonLineRenderer(props: JsonLineRendererProps) {
             ? getSourceInformation(props.sourceMap, propertyPathAtLine)
             : '';
           return (
-            <pre
+            <div
               style={{ paddingLeft: `${indentation}rem` }}
               className="group truncate hover:bg-slate-800 h-6"
             >
-              {text}
+              <span dangerouslySetInnerHTML={highlightLine(text)}></span>
               {getCollapsed(index) ? '...' : ''}
 
               <span className="ml-32 hidden group-hover:inline-block text-sm text-slate-500">
                 {sourceInformation}
               </span>
-            </pre>
+            </div>
           );
         })}
       </div>
     </div>
   );
 }
+
+const highlightLine = (line: string) => {
+  // Assuming the code is JSON. Change 'json' to the appropriate language if needed.
+  const highlighted = hljs.highlight(line, { language: 'json' }).value;
+  return { __html: highlighted };
+};

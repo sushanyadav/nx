@@ -3,6 +3,9 @@ import { inspect } from '@xstate/inspect';
 import { App } from './app/app';
 import { ExternalApiImpl } from './app/external-api-impl';
 import { render } from 'preact';
+import hljs from 'highlight.js/lib/core';
+import json from 'highlight.js/lib/languages/json';
+import 'highlight.js/styles/github-dark.css';
 
 if (window.useXstateInspect === true) {
   inspect({
@@ -13,6 +16,8 @@ if (window.useXstateInspect === true) {
 
 window.externalApi = new ExternalApiImpl();
 const container = document.getElementById('app');
+
+hljs.registerLanguage('json', json);
 
 if (!window.appConfig) {
   render(
